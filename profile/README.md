@@ -127,6 +127,65 @@ helm install goose ./helm \
 - 🔲 HPA in Helm chart
 - 🔲 Avro support
 
+## ⚖️ Competitive Analysis
+
+### Goose vs Other Kafka Delivery Tools
+
+| Tool | Language | Type | Best For |
+|------|----------|------|----------|
+| **Goose** | Go | Standalone consumer | Kafka → HTTP, lightweight, fast |
+| **Raystack Firehose** | Java | Standalone consumer | Kafka → 12+ sink types |
+| **Kafka Connect** | Java | Framework (distributed) | Enterprise, 100+ connectors |
+| **AWS Kinesis Firehose** | Managed | Cloud service | S3/Redshift/ES on AWS |
+| **Apache Flink** | Java/Scala | Stream processor | Complex transforms, exactly-once |
+| **Logstash** | JRuby | Pipeline tool | Kafka → Elasticsearch |
+
+### Feature Comparison
+
+| Feature | Goose | Raystack | Kafka Connect | AWS Firehose | Flink |
+|---------|-------|----------|---------------|--------------|-------|
+| Binary size | ~26MB | ~164MB | ~500MB+ | N/A | ~300MB+ |
+| RAM at idle | ~30MB | ~200-300MB | ~500MB+ | N/A | ~1GB+ |
+| Startup | <1s | 5-10s | 30-60s | N/A | 10-30s |
+| Sinks | HTTP (extensible) | 12+ | 100+ | 6 (S3/Redshift/ES/etc) | Anything |
+| Protobuf → JSON | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Schema registry | ✅ Stencil | ✅ Stencil | ✅ Confluent | ❌ | ✅ |
+| Filtering | ✅ CEL + JSONPath | ✅ JEXL | ✅ SMTs | ✅ Lambda | ✅ Custom |
+| Validation | ✅ CEL | ❌ | ❌ | ✅ Lambda | ✅ |
+| Circuit breaker | ✅ | ❌ | ❌ | ❌ | ❌ |
+| DLQ | ✅ Kafka | ✅ Kafka + Blob | ✅ Kafka | ✅ S3 | ✅ |
+| Connection TTL | ✅ | ❌ (pinning bug) | ✅ | N/A | ✅ |
+| Backpressure | ✅ Channels | ⚠️ Spin loop | ✅ | ✅ | ✅ |
+| At-least-once | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Exactly-once | ❌ | ❌ | ❌ | ❌ | ✅ |
+| OTel tracing | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Vendor lock-in | None | None | None | **AWS** | None |
+| Dependencies | 6 | 50+ | 50+ | N/A | 50+ |
+
+### Goose's Unique Advantages
+
+- 🔌 **Connection TTL** — prevents pod pinning (Raystack has this bug)
+- 🛡️ **Circuit breaker** — only tool with built-in circuit breaker
+- 🔍 **CEL filtering** — Google-standard, more modern than JEXL
+- ✅ **Schema validation** — validates messages before sending
+- 🔄 **Network error retry** — zero message drops on pod restarts
+- 📦 **6 dependencies** — vs 50+ in Java tools
+- 📊 **OTel tracing** — only tool with built-in distributed tracing
+
+### When to Choose Goose
+
+| Scenario | Goose? | Alternative |
+|----------|--------|-------------|
+| Kafka → HTTP REST | ✅ **Best choice** | — |
+| Kafka → HTTP with protobuf | ✅ **Best choice** | Raystack |
+| Kafka → HTTP with complex filtering | ✅ **Best choice** | — |
+| Minimal resource usage | ✅ **Best choice** | — |
+| Kafka → multiple DBs/storage | ❌ | Raystack or Kafka Connect |
+| Exactly-once semantics | ❌ | Apache Flink |
+| Fully managed cloud | ❌ | AWS Kinesis Firehose |
+| 100+ pre-built connectors | ❌ | Kafka Connect |
+| Complex stream processing | ❌ | Apache Flink |
+
 ## 📜 License
 
 Apache 2.0 — Built as a replacement for [raystack/firehose](https://github.com/raystack/firehose)
