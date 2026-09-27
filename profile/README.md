@@ -1,22 +1,23 @@
 # 🪿 Goose — Talk to Me, Goose
 
 <p align="center">
-  <strong>Lightweight Kafka-to-HTTP Firehose</strong><br>
+  <strong>Lightweight Kafka-to-Sink Firehose</strong><br>
   <em>"Talk to me, Goose." — Maverick, Top Gun (1986)</em>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go" alt="Go">
-  <img src="https://img.shields.io/badge/Docker-~26MB-2496ED?logo=docker" alt="Docker">
+  <img src="https://img.shields.io/badge/Docker-~33MB-2496ED?logo=docker" alt="Docker">
   <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License">
   <img src="https://img.shields.io/badge/Tests-14%20E2E-brightgreen" alt="Tests">
+  <img src="https://github.com/Goose-Kafka/goose/actions/workflows/ci.yml/badge.svg" alt="CI">
 </p>
 
 ---
 
 ## 🎯 What is Goose?
 
-Goose is a **cloud-native Kafka consumer** that delivers streaming data to HTTP endpoints — fast, reliably, and with full observability.
+Goose is a **cloud-native Kafka consumer** that delivers streaming data to multiple sink types — HTTP REST, gRPC, MongoDB, PostgreSQL, and Redis — fast, reliably, and with full observability.
 
 Inspired by **Goose** from _Top Gun_ — the trusted RIO (Radar Intercept Officer) who feeds critical data to Maverick in real-time, never misses a callout, and always has his pilot's back.
 
@@ -26,7 +27,7 @@ Goose does the same for your services: it sits behind them, feeds data from Kafk
 
 | Feature | Description |
 |---------|-------------|
-| 🚀 **Lightweight** | ~26MB binary, ~30MB RAM, <1s startup (vs 786MB Java) |
+| 🚀 **Lightweight** | ~33MB binary, ~30MB RAM, <1s startup (vs 786MB Java) |
 | 📊 **Observable** | 15 Prometheus metrics + OpenTelemetry traces + Loki logs |
 | 🛡️ **Reliable** | At-least-once delivery with offset commits, DLQ, circuit breaker |
 | 🔀 **Schema Support** | JSON passthrough + Protobuf→JSON via Stencil/schema registry |
@@ -122,8 +123,13 @@ helm install goose ./helm \
 - ✅ OTel spans in consumer and worker
 - ✅ Consumer lag metrics
 - ✅ Network error retry (zero message drops)
-- 🔲 gRPC sink support
-- 🔲 Batch-poll consumer (500x throughput boost)
+- ✅ gRPC sink
+- ✅ Redis sink
+- ✅ PostgreSQL sink
+- ✅ MongoDB sink
+- ✅ Batch-poll consumer
+- ✅ Batch-with-response HTTP mode
+- 🔲 Elasticsearch sink
 - 🔲 HPA in Helm chart
 - 🔲 Avro support
 
